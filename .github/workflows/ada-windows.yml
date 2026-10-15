@@ -1,0 +1,71 @@
+name: ada-windows
+
+# Pipeline dedicado del proyecto AdA Player.
+# Compila el motor mpv-AdA para Windows x64 (build estatico completo, GPL):
+#   - artifact/mpv.exe  : reproductor autocontenido (FFmpeg estatico,
+#                         D3D11, Vulkan, shaderc, LuaJIT, JS, DVD, SMTC...)
+#   - artifact-libmpv/  : libmpv-2.dll + headers (para incrustar en la app
+#                         de escritorio AdA Player via Electron/Tauri).
+# Replica el job "mingw64-full" del CI upstream (ci/build-mingw64-full.sh)
+# sobre el contenedor BtbN FFmpeg-Builds.
+#
+# Disparos:
+#   - workflow_dispatch : manual, desde la pestana Actions
+#   - tags v0.*         : build de release al etiquetar
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v0.*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  win64-full:
+    name: mpv + libmpv (win64, full, GPL)
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/btbn/ffmpeg-builds/win64-gpl:latest
+      env:
+        WINEPREFIX: /tmp/wine
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build
+        id: build
+        run: |
+          ./ci/build-mingw64-full.sh
+
+      - name: Print meson log
+        if: ${{ failure() && steps.build.outcome == 'failure' }}
+        run: |
+          cat ./build/meson-logs/meson-log.txt
+
+      - name: Functional test (wine)
+        run: |
+          cd artifact && wine ./mpv.com -v --no-config
+        env:
+          WINEDEBUG: '+loaddll'
+
+      - name: Artifact name
+        id: artifact
+        run: |
+          VERSION_FILE=$(find . -path "*/common/version.h" -type f | head -n 1)
+          VER=$(grep VERSION "$VERSION_FILE" | cut -d'"' -f2)
+          echo "mpv=mpv-ada-$VER-win64-full-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          echo "libmpv=libmpv-ada-$VER-win64-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v7
+        name: Upload mpv engine (mpv.exe estatico)
+        with:
+          name: ${{ steps.artifact.outputs.mpv }}
+          path: artifact/*
+
+      - uses: actions/upload-artifact@v7
+        name: Upload libmpv (dll + headers para embedding)
+        with:
+          name: ${{ steps.artifact.outputs.libmpv }}
+          path: artifact-libmpv/*
