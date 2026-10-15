@@ -1,3 +1,11 @@
 /subprojects/*
 !/subprojects/packagefiles
 !/subprojects/*.wrap
+
+# AdA Player (interfaz + escritorio)
+ui-ada/node_modules/
+ui-ada/.next/
+ui-ada/out/
+ui-ada/dev.log
+ui-ada/server.log
+desktop/node_modules/

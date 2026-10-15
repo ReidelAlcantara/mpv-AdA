@@ -1,0 +1,11 @@
+{
+  "name": "ada-player-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AdA Player Desktop — envoltorio Electron para el motor mpv-AdA con la interfaz AdA",
+  "main": "main.js",
+  "license": "GPL-2.0-or-later",
+  "dependencies": {
+    "socket.io": "^4.8.4"
+  }
+}
