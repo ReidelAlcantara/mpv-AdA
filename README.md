@@ -5,6 +5,11 @@
 > **Fork note:** this repository (`mpv-AdA`) is the playback engine of the
 > AdA Player desktop application. Windows x64 builds are produced by the
 > `ada-windows` workflow and the `mingw64-full` job of the `build` workflow.
+> The installable desktop app (Electron wrapper + full AdA UI, with this
+> engine bundled) is published as
+> [`ada-player-v0.1.0`](https://github.com/ReidelAlcantara/mpv-AdA/releases/tag/ada-player-v0.1.0)
+> and built from the [`ada-player`](tree/ada-player) branch (`desktop/` and
+> `ui-ada/` directories).
 
 
 * [External links](#external-links)
