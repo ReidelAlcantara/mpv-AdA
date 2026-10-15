@@ -2,6 +2,10 @@
 
 # mpv
 
+> **Fork note:** this repository (`mpv-AdA`) is the playback engine of the
+> AdA Player desktop application. Windows x64 builds are produced by the
+> `ada-windows` workflow and the `mingw64-full` job of the `build` workflow.
+
 
 * [External links](#external-links)
 * [Overview](#overview)
